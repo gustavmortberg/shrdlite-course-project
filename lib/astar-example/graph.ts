@@ -1,36 +1,41 @@
 /// <reference path="../typescript-collections/collections.ts" />
 
 class Graph {
-	private edges = new collections.Set<Edge>(e => e.edgeToString());
-	private nodes = new collections.Set<GraphNode>(n => n.getId().toString());
+	//private edges = new collections.Set<Edge>(e => e.edgeToString());
+	//private nodes = new collections.Set<GraphNode>(n => n.getId().toString());
+	private theGraph = new collection.MultiDictionary<GraphNode,(GraphNode,number)>(n => n.getId().toString());
+	private final directed;
 
-	constructor() {
-
+	constructor(directed : boolean) {
+		this.directed = directed;
 	}
 	
-	addEdge(newEdge : Edge) {
-		if (this.nodes.contains(newEdge.getFromNode()) && this.nodes.contains(newEdge.getEndNode())) {
-			this.edges.add(newEdge);
+	addEdge(source : GraphNode, target : GraphNode, weight : number) {
+		if (this.theGraph.containsKey(source) && this.nodes.containsKey(target)) {
+			this.theGraph.set(source,(target,number));
+
+			if (!this.directed) {
+				this.theGraph.set(target,(source,number));
+			}
 		} else {
 			throw "can't place an edge between nonexistent nodes :(";
-			
 		}
 	}
 
 	addNode(newNode : GraphNode) {
-		this.nodes.add(newNode);
+		this.theGraph.set(newNode,(newNode,0));
 	}
 
 	contains(node : GraphNode) : boolean {
-		return this.nodes.contains(node); 
+		return this.theGraph.containsKey(node);
 	}
 
 	getNumberOfNodes() : number {
-		return this.nodes.size();
+		return this.theGraph.size();
 	}
 
 	getNumberOfEdges() : number {
-		return this.edges.size();
+		return 1; //this.edges.size();
 	}
 
 	getEdgesTo(node : GraphNode) : Edge[] {
